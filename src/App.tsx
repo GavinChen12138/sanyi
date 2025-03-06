@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { SubjectType, GradeType, UserSelection, CalculationResult, MajorGroup } from './types'
 import ResultList from './components/ResultList'
 import schoolsData from './data/schools.json'
@@ -6,16 +6,16 @@ import schoolsData from './data/schools.json'
 function App() {
   const [selectedSubjects, setSelectedSubjects] = useState<SubjectType[]>([])
   const [subjectGrades, setSubjectGrades] = useState<Record<string, GradeType>>({
-    '语文': '',
-    '数学': '',
-    '外语': '',
-    '物理': '',
-    '化学': '',
-    '生物': '',
-    '历史': '',
-    '地理': '',
-    '政治': '',
-    '技术': '',
+    '语文': '' as GradeType,
+    '数学': '' as GradeType,
+    '外语': '' as GradeType,
+    '物理': '' as GradeType,
+    '化学': '' as GradeType,
+    '生物': '' as GradeType,
+    '历史': '' as GradeType,
+    '地理': '' as GradeType,
+    '政治': '' as GradeType,
+    '技术': '' as GradeType,
   })
   const [results, setResults] = useState<CalculationResult[]>([])
   const [showResults, setShowResults] = useState(false)
@@ -74,7 +74,7 @@ function App() {
     }
 
     // 检查是否所有科目都已选择成绩
-    const hasEmptyGrades = Object.values(subjectGrades).some(grade => grade === '')
+    const hasEmptyGrades = Object.values(subjectGrades).some(grade => !grade)
     if (hasEmptyGrades) {
       alert('请为所有科目选择学考成绩')
       return

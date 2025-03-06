@@ -116,7 +116,7 @@ const ResultList = ({ results, selectedSubjects, subjectGrades }: ResultListProp
               <div className="flex items-center">
                 <span className="text-sm text-gray-600 mr-2">选考科目：</span>
                 <div className="flex gap-2">
-                  {selectedSubjects.map((subject, index) => (
+                  {selectedSubjects.map((subject) => (
                     <span key={subject} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {subject}
                     </span>
