@@ -102,33 +102,7 @@ const ResultList = ({ results, selectedSubjects, subjectGrades }: ResultListProp
   return (
     <div className="mt-2 animate-fade-in" id="results-container">
 
-      {/* 顶部操作栏 */}
-      <div className="flex items-center justify-between mb-6 sticky top-14 bg-slate-50 z-10 py-2">
-        <div className="flex items-center gap-2">
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showEligibleOnly}
-              onChange={(e) => setShowEligibleOnly(e.target.checked)}
-              className="sr-only peer"
-            />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            <span className="ml-3 text-sm font-medium text-gray-700">只看可报考</span>
-          </label>
-        </div>
-
-        <button
-          onClick={saveAsImage}
-          className="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          保存图片
-        </button>
-      </div>
-
-      <div id="printable-content" className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div id="printable-content" className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-24">
         {/* 个人信息摘要卡片 */}
         <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-white">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -204,6 +178,31 @@ const ResultList = ({ results, selectedSubjects, subjectGrades }: ResultListProp
             <img src="/qrcode_deng.jpg" alt="二维码" className="w-32 h-32 object-contain" />
           </div>
           <p className="text-sm text-gray-500 font-medium">扫码关注更多资讯</p>
+        </div>
+      </div>
+
+      {/* Fixed Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 safe-bottom z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div className="max-w-3xl mx-auto flex gap-3">
+          <button
+            onClick={() => setShowEligibleOnly(!showEligibleOnly)}
+            className={`flex-1 h-12 rounded-xl text-base font-bold shadow-lg transition-all active:scale-[0.98]
+              ${showEligibleOnly
+                ? 'bg-blue-600 text-white shadow-blue-200'
+                : 'bg-white text-gray-700 border border-gray-200 shadow-gray-100'}`}
+          >
+            {showEligibleOnly ? '只看可报考' : '显示全部'}
+          </button>
+
+          <button
+            onClick={saveAsImage}
+            className="flex-1 bg-blue-600 text-white h-12 rounded-xl text-base font-bold shadow-lg shadow-blue-200 active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            保存图片
+          </button>
         </div>
       </div>
     </div>
