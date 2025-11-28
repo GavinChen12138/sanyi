@@ -38,7 +38,7 @@ function App() {
   // 计算分数
   const calculateScore = (grades: Record<string, GradeType>, school: MajorGroup): number => {
     let totalScore = 0
-    
+
     Object.entries(grades).forEach(([_, grade]) => {
       switch (grade) {
         case 'A':
@@ -58,7 +58,7 @@ function App() {
           break
       }
     })
-    
+
     return totalScore
   }
 
@@ -103,13 +103,13 @@ function App() {
     schools.forEach(school => {
       // 检查选考科目是否符合要求
       const subjectsMatch = checkSubjectRequirements(selectedSubjects, school.required_subjects as SubjectType[])
-      
+
       // 计算总分
       const totalScore = calculateScore(subjectGrades, school)
-      
+
       // 判断是否符合报考条件
       const isEligible = subjectsMatch && totalScore >= school.score
-      
+
       calculatedResults.push({
         school: school.school,
         group: school.group,
@@ -128,91 +128,139 @@ function App() {
     setShowResults(false)
   }
 
-  return (
-    <div className="min-h-screen w-full bg-white flex flex-col">
-      <div className="flex-grow w-full flex justify-center py-6 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-5xl">
-          {!showResults ? (
-            <div className="w-full max-w-5xl mx-auto bg-white sm:bg-white sm:rounded-lg sm:shadow-lg p-6 sm:p-8 lg:p-10">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 text-center">浙江省三位一体初审入围筛选系统</h1>
-              
-              {/* 科目选择区块 */}
-              <div className="mb-8 sm:mb-10">
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4">选择三门选考科目</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {allSubjects.map(subject => (
-                    <button
-                      key={subject}
-                      onClick={() => handleSubjectChange(subject)}
-                      className={`p-2 rounded-lg text-xs sm:text-sm font-medium transition-colors
-                        ${selectedSubjects.includes(subject)
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                    >
-                      {subject}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 成绩设置区块 */}
-              <div className="mb-8 sm:mb-10">
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4">学考成绩</h2>
-                <div className="space-y-4">
-                  {Object.keys(subjectGrades).map(subject => (
-                    <div key={subject} className="flex items-center justify-between py-2 border-b">
-                      <span className="text-sm sm:text-base text-gray-700">{subject}</span>
-                      <div className="flex gap-1 sm:gap-2">
-                        {grades.map(grade => (
-                          <button
-                            key={grade}
-                            onClick={() => handleGradeChange(subject, grade)}
-                            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full text-xs sm:text-sm font-medium transition-colors flex items-center justify-center
-                              ${subjectGrades[subject] === grade
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                          >
-                            {grade}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* 提交按钮 */}
-              <div className="flex justify-center">
-                <button
-                  onClick={handleSubmit}
-                  className="bg-blue-600 text-white px-8 py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-blue-700 transition-colors w-full sm:w-64"
-                >
-                  提交选择
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="w-full max-w-5xl mx-auto bg-white sm:bg-white sm:rounded-lg sm:shadow-lg p-6 sm:p-8 lg:p-10">
-              <div className="flex flex-col items-center mb-6">
-                <button
-                  onClick={handleBack}
-                  className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg text-sm sm:text-base font-medium hover:bg-gray-300 transition-colors sm:w-48"
-                >
-                  返回修改
-                </button>
-              </div>
-              
-              <ResultList 
-                results={results} 
-                selectedSubjects={selectedSubjects}
-                subjectGrades={subjectGrades}
-              />
-            </div>
-          )}
-        </div>
+  // 渲染等级选择按钮
+  const renderGradeSelector = (subject: string) => (
+    <div key={subject} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-base font-semibold text-gray-800">{subject}</span>
+        {subjectGrades[subject] && (
+          <span className="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+            已选: {subjectGrades[subject]}
+          </span>
+        )}
+      </div>
+      <div className="flex justify-between gap-2">
+        {grades.map(grade => (
+          <button
+            key={grade}
+            onClick={() => handleGradeChange(subject, grade)}
+            className={`flex-1 h-10 rounded-lg text-sm font-medium transition-all active:scale-95
+              ${subjectGrades[subject] === grade
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-200 ring-2 ring-blue-600 ring-offset-1'
+                : 'bg-gray-50 text-gray-600 border border-gray-200'}`}
+          >
+            {grade}
+          </button>
+        ))}
       </div>
     </div>
-  );
+  )
+
+  // 计算各个等级的数量
+  const gradeCount = Object.values(subjectGrades).reduce((acc, grade) => {
+    if (grade) {
+      acc[grade] = (acc[grade] || 0) + 1;
+    }
+    return acc;
+  }, {} as Record<GradeType, number>);
+
+  return (
+    <div className="min-h-screen w-full bg-slate-50 pb-32">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-10 safe-top">
+        <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-center relative">
+          {showResults && (
+            <button
+              onClick={handleBack}
+              className="absolute left-4 p-2 -ml-2 text-gray-600"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+            </button>
+          )}
+          <h1 className="text-base font-bold text-gray-900">三位一体初审筛选</h1>
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-4 py-6">
+        {!showResults ? (
+          <div className="space-y-8 animate-fade-in">
+            {/* 选考科目 */}
+            <section>
+              <div className="flex items-center justify-between mb-4 px-1">
+                <h2 className="text-lg font-bold text-gray-800">选考科目</h2>
+                <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                  已选 {selectedSubjects.length}/3
+                </span>
+              </div>
+              <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
+                {allSubjects.map(subject => (
+                  <button
+                    key={subject}
+                    onClick={() => handleSubjectChange(subject)}
+                    disabled={!selectedSubjects.includes(subject) && selectedSubjects.length >= 3}
+                    className={`aspect-[4/3] rounded-xl text-sm font-medium transition-all active:scale-95 flex flex-col items-center justify-center gap-1
+                      ${selectedSubjects.includes(subject)
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-200 ring-2 ring-blue-600 ring-offset-1'
+                        : 'bg-white text-gray-600 border border-gray-200 shadow-sm disabled:opacity-50 disabled:bg-gray-50'}`}
+                  >
+                    {subject}
+                    {selectedSubjects.includes(subject) && (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            {/* 学考成绩 */}
+            <section>
+              <h2 className="text-lg font-bold text-gray-800 mb-4 px-1">学考成绩</h2>
+              <div className="space-y-3">
+                {Object.keys(subjectGrades).map(subject => renderGradeSelector(subject))}
+              </div>
+            </section>
+
+            {/* 底部提交栏 */}
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 safe-bottom z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+              <div className="max-w-3xl mx-auto">
+                {/* 实时信息摘要 */}
+                <div className="mb-3 flex items-center justify-between px-1">
+                  <div className="flex gap-1.5">
+                    {selectedSubjects.length > 0 ? selectedSubjects.map(s => (
+                      <span key={s} className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs font-bold">{s}</span>
+                    )) : <span className="text-gray-400 text-xs">请选择科目</span>}
+                  </div>
+                  <div className="flex gap-4">
+                    {grades.map(g => (
+                      <div key={g} className="flex flex-col items-center w-5">
+                        <span className="text-[10px] text-gray-400 font-medium leading-none mb-1">{g}</span>
+                        <span className={`text-sm font-bold leading-none ${gradeCount[g] ? 'text-gray-900' : 'text-gray-300'}`}>
+                          {gradeCount[g] || 0}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleSubmit}
+                  className="w-full bg-blue-600 text-white h-12 rounded-xl text-base font-bold shadow-lg shadow-blue-200 active:scale-[0.98] transition-transform"
+                >
+                  查看结果
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <ResultList
+            results={results}
+            selectedSubjects={selectedSubjects}
+            subjectGrades={subjectGrades}
+          />
+        )}
+      </main>
+    </div>
+  )
 }
 
 export default App
