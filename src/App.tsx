@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { SubjectType, GradeType, UserSelection, CalculationResult, MajorGroup } from './types'
 import ResultList from './components/ResultList'
+import Welcome from './components/Welcome'
 import schoolsData from './data/schools.json'
 
 function App() {
+  const [showWelcome, setShowWelcome] = useState(true)
   const [selectedSubjects, setSelectedSubjects] = useState<SubjectType[]>([])
   const [subjectGrades, setSubjectGrades] = useState<Record<string, GradeType>>({
     '语文': '' as GradeType,
@@ -130,21 +132,14 @@ function App() {
 
   // 渲染等级选择按钮
   const renderGradeSelector = (subject: string) => (
-    <div key={subject} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-base font-semibold text-gray-800">{subject}</span>
-        {subjectGrades[subject] && (
-          <span className="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-            已选: {subjectGrades[subject]}
-          </span>
-        )}
-      </div>
-      <div className="flex justify-between gap-2">
+    <div key={subject} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+      <span className="text-base font-semibold text-gray-800">{subject}</span>
+      <div className="flex gap-2">
         {grades.map(grade => (
           <button
             key={grade}
             onClick={() => handleGradeChange(subject, grade)}
-            className={`flex-1 h-10 rounded-lg text-sm font-medium transition-all active:scale-95
+            className={`w-9 h-9 rounded-full text-sm font-medium transition-all active:scale-95 flex items-center justify-center
               ${subjectGrades[subject] === grade
                 ? 'bg-blue-600 text-white shadow-md shadow-blue-200 ring-2 ring-blue-600 ring-offset-1'
                 : 'bg-gray-50 text-gray-600 border border-gray-200'}`}
@@ -163,6 +158,10 @@ function App() {
     }
     return acc;
   }, {} as Record<GradeType, number>);
+
+  if (showWelcome) {
+    return <Welcome onStart={() => setShowWelcome(false)} />
+  }
 
   return (
     <div className="min-h-screen w-full bg-slate-50 pb-32">
@@ -198,14 +197,14 @@ function App() {
                     key={subject}
                     onClick={() => handleSubjectChange(subject)}
                     disabled={!selectedSubjects.includes(subject) && selectedSubjects.length >= 3}
-                    className={`aspect-[4/3] rounded-xl text-sm font-medium transition-all active:scale-95 flex flex-col items-center justify-center gap-1
+                    className={`h-12 rounded-xl text-sm font-medium transition-all active:scale-95 flex items-center justify-center gap-1.5
                       ${selectedSubjects.includes(subject)
                         ? 'bg-blue-600 text-white shadow-md shadow-blue-200 ring-2 ring-blue-600 ring-offset-1'
                         : 'bg-white text-gray-600 border border-gray-200 shadow-sm disabled:opacity-50 disabled:bg-gray-50'}`}
                   >
                     {subject}
                     {selectedSubjects.includes(subject) && (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                     )}
                   </button>
                 ))}
